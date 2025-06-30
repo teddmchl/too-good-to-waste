@@ -1,0 +1,74 @@
+/* src/pages/AddMeal.css */
+
+.add-meal-wrapper {
+  padding: 6rem 1.5rem 3rem;
+  background-color: #f7fafc;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: start;
+}
+
+.add-meal-card {
+  background-color: #ffffff;
+  padding: 2.5rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.07);
+  max-width: 460px;
+  width: 100%;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.add-meal-card h2 {
+  font-size: 1.75rem;
+  color: #2c7a7b;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.add-meal-card .subtext {
+  text-align: center;
+  font-size: 0.95rem;
+  color: #718096;
+  margin-bottom: 1.5rem;
+}
+
+.add-meal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.add-meal-form input {
+  padding: 0.85rem;
+  border-radius: 8px;
+  border: 1px solid #CBD5E0;
+  font-size: 1rem;
+}
+
+.add-meal-form input:focus {
+  border-color: #2c7a7b;
+  box-shadow: 0 0 0 2px rgba(44, 122, 123, 0.2);
+  outline: none;
+}
+
+.add-meal-form button {
+  padding: 0.9rem;
+  background-color: #2c7a7b;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+
+.add-meal-form button:hover {
+  background-color: #319795;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}

@@ -1,0 +1,58 @@
+.vendor-navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 2rem;
+  z-index: 1000;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 600;
+  color: #2c7a7b;
+}
+
+.nav-logo {
+  height: 32px;
+  width: 32px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.nav-link {
+  color: #2d3748;
+  text-decoration: none;
+  font-weight: 500;
+  position: relative;
+}
+
+.nav-link.active {
+  color: #2c7a7b;
+  font-weight: 600;
+}
+
+.logout-btn {
+  background: #e53e3e;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.logout-btn:hover {
+  background: #c53030;
+}

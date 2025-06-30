@@ -1,72 +1,119 @@
+// src/Register.js
+
 import React, { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "./firebase";
+import { doc, setDoc } from "firebase/firestore";
+import { auth, db } from "./firebase";
 import { useNavigate, Link } from "react-router-dom";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { toast } from "react-toastify";
+import Header from "./components/Header";
+import "./Register.css";
 
 const Register = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const togglePassword = () => setShowPassword(!showPassword);
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+    role: "customer",
+  });
+
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleRegister = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      toast.success("Login successful!");
-      navigate("/dashboard");
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        form.email,
+        form.password
+      );
+
+      // Save additional data to Firestore
+      const userRef = doc(db, "users", userCredential.user.uid);
+      await setDoc(userRef, {
+        uid: userCredential.user.uid,
+        email: form.email,
+        role: form.role,
+        createdAt: new Date(),
+      });
+
+      toast.success("Account created successfully!");
+      navigate("/login");
     } catch (err) {
       toast.error(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="page-container">
-      <div className="auth-card">
-        <h2 style={{ textAlign: "center", marginBottom: "1.5rem" }}>
-          Register
-        </h2>
-        <form onSubmit={handleSubmit}>
-          <input
-            type="email"
-            placeholder="Email"
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <div style={{ position: "relative" }}>
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <span
-              onClick={togglePassword}
-              style={{
-                position: "absolute",
-                right: "10px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                cursor: "pointer",
-              }}
-            >
-              {showPassword ? <FaEyeSlash /> : <FaEye />}
-            </span>
+    <>
+      <Header />
+      <div className="page-content">
+        <div className="auth-container">
+          <div
+            className="auth-left"
+            style={{
+              background: `url(${
+                process.env.PUBLIC_URL + "/market.jpg"
+              }) center/cover no-repeat`,
+            }}
+          >
+            <div className="brand-intro">
+              <h1>Too Good To Waste</h1>
+              <p className="tagline">Feeding Nairobi, saving surplus</p>
+              <p className="zone">📍 Nairobi County</p>
+            </div>
           </div>
-          <button type="submit">Register</button>
-        </form>
-        <div
-          className="link"
-          style={{ marginTop: "1rem", textAlign: "center" }}
-        >
-          Already have an account? <Link to="/login">Login</Link>
+          <div className="auth-right">
+            <form className="auth-form" onSubmit={handleRegister}>
+              <h2>Create Account</h2>
+
+              <input
+                name="email"
+                placeholder="Email"
+                type="email"
+                value={form.email}
+                onChange={handleChange}
+                required
+              />
+
+              <input
+                name="password"
+                placeholder="Password"
+                type="password"
+                value={form.password}
+                onChange={handleChange}
+                required
+              />
+
+              <select
+                name="role"
+                value={form.role}
+                onChange={handleChange}
+                required
+              >
+                <option value="customer">I'm a Customer</option>
+                <option value="vendor">I'm a Vendor</option>
+              </select>
+
+              <button type="submit" disabled={loading}>
+                {loading ? "Creating Account..." : "Register"}
+              </button>
+
+              <div className="form-footer">
+                Already have an account? <Link to="/login">Login</Link>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

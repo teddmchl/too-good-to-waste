@@ -1,0 +1,41 @@
+.main-header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 999;
+  background-color: #ffffff;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 2rem;
+  height: 64px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 38px;
+  margin-right: 0.75rem;
+}
+
+.brand-text {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2C7A7B;
+}
+
+.header-right a {
+  margin-left: 1.5rem;
+  color: #2D3748;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.header-right a:hover {
+  color: #2C7A7B;
+}

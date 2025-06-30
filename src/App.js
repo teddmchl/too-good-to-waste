@@ -1,11 +1,18 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Register from "./Register";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import Login from "./Login";
-import Dashboard from "./Dashboard";
+import Register from "./Register";
+import Dashboard from "./pages/VendorDashboard";
+import Explore from "./CustomerDashboard";
 import "./styles.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Orders from "./pages/Orders";
 
 function App() {
   return (
@@ -17,14 +24,16 @@ function App() {
         </header>
 
         <main>
+          <ToastContainer position="top-center" />
           <Routes>
-            <Route path="/" element={<Register />} />
+            <Route path="/orders" element={<Orders />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/explore" element={<Explore />} />
+            <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </main>
-
-        <ToastContainer position="bottom-center" />
       </div>
     </Router>
   );
