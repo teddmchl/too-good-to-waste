@@ -32,14 +32,15 @@ const Login = () => {
       const userSnap = await getDoc(userRef);
       if (userSnap.exists()) {
         const role = userSnap.data().role;
-        toast.success("Login successful!");
         if (role === "vendor") {
           navigate("/dashboard");
-        } else {
+        } else if (role === "customer") {
           navigate("/explore");
+        } else {
+          toast.error("Unknown user role.");
         }
       } else {
-        toast.error("User role not found. Please contact support.");
+        toast.error("User role not found.");
       }
     } catch (err) {
       toast.error(err.message);
@@ -90,7 +91,7 @@ const Login = () => {
               </div>
               <button type="submit">Login</button>
               <div className="form-footer">
-                Don’t have an account? <Link to="/register">Sign up</Link>
+                Don't have an account? <Link to="/register">Sign up</Link>
               </div>
             </form>
           </div>

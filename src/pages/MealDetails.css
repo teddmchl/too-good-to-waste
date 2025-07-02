@@ -1,0 +1,64 @@
+.meal-details-container {
+  max-width: 700px;
+  margin: 2rem auto;
+  padding: 2rem 1rem;
+}
+.meal-details-card {
+  display: flex;
+  flex-wrap: wrap;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+.meal-details-img {
+  width: 320px;
+  height: 320px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.meal-details-info {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.meal-details-info h2 {
+  margin-bottom: 1rem;
+  color: #2c7a7b;
+}
+.meal-details-info .qty, .meal-details-info .expires, .meal-details-info .vendor {
+  font-size: 1rem;
+  color: #4a5568;
+  margin-bottom: 0.5rem;
+}
+.badges {
+  margin: 1rem 0;
+}
+.badge {
+  display: inline-block;
+  background: #e6fffa;
+  color: #2c7a7b;
+  border-radius: 999px;
+  padding: 0.3rem 0.8rem;
+  margin-right: 0.5rem;
+  font-size: 0.95rem;
+}
+.reserve-btn {
+  background: #2c7a7b;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.9rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1.5rem;
+  transition: background 0.2s;
+}
+.reserve-btn:disabled {
+  background: #b2f5ea;
+  color: #2c7a7b;
+  cursor: not-allowed;
+}

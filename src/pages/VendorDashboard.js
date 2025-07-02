@@ -1,10 +1,18 @@
 // src/pages/VendorDashboard.js
 
 import React, { useEffect, useState } from "react";
-import { collection, query, orderBy, getDocs } from "firebase/firestore";
+import {
+  collection,
+  query,
+  orderBy,
+  getDocs,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
 import { db } from "../firebase";
 import VendorNavbar from "../components/VendorNavbar";
 import "./VendorDashboard.css";
+import { toast } from "react-toastify";
 
 const VendorDashboard = () => {
   const vendorName = "Scott Foods"; // Optionally fetch from Firebase Auth
@@ -42,7 +50,7 @@ const VendorDashboard = () => {
       <main className="dashboard-container">
         <div className="greeting">
           <h1>Karibu, {vendorName}</h1>
-          <p>Here’s how you’re making an impact today 🌍</p>
+          <p>Here's how you're making an impact today 🌍</p>
         </div>
 
         <div className="stats-grid">
@@ -62,7 +70,7 @@ const VendorDashboard = () => {
         {loading ? (
           <p className="loading">Loading meals...</p>
         ) : meals.length === 0 ? (
-          <p className="no-listings">You haven’t posted any meals yet.</p>
+          <p className="no-listings">You haven't posted any meals yet.</p>
         ) : (
           <div className="meals-grid">
             {meals.map((meal) => (
@@ -75,6 +83,18 @@ const VendorDashboard = () => {
                     ⏰ Expires in {timeLeft(meal.expiresAt?.seconds)} hrs
                   </p>
                 </div>
+                <button
+                  onClick={async () => {
+                    if (window.confirm("Delete this meal?")) {
+                      await deleteDoc(doc(db, "meals", meal.id));
+                      setMeals(meals.filter((m) => m.id !== meal.id));
+                      toast.success("Meal deleted.");
+                    }
+                  }}
+                  className="delete-btn"
+                >
+                  🗑️
+                </button>
               </div>
             ))}
           </div>

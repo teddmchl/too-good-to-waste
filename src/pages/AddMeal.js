@@ -1,8 +1,9 @@
 // src/pages/AddMeal.js
 
 import React, { useState } from "react";
-import { db } from "../firebase";
+import { db, storage } from "../firebase";
 import { collection, addDoc, Timestamp } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import VendorNavbar from "../components/VendorNavbar";
@@ -13,8 +14,10 @@ const AddMeal = () => {
     title: "",
     quantity: "",
     expiresInHours: "",
-    imageUrl: "",
   });
+  const [imageFile, setImageFile] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -22,23 +25,44 @@ const AddMeal = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setImageFile(file);
+    setPreview(file ? URL.createObjectURL(file) : null);
+  };
+
   const handlePost = async (e) => {
     e.preventDefault();
+    if (!imageFile) {
+      toast.error("Please select an image.");
+      return;
+    }
+    setUploading(true);
     try {
+      // Upload image to Firebase Storage
+      const storageRef = ref(storage, `meals/${Date.now()}_${imageFile.name}`);
+      await uploadBytes(storageRef, imageFile);
+      const imageUrl = await getDownloadURL(storageRef);
+
       const expiryTimestamp = Timestamp.fromDate(
         new Date(Date.now() + form.expiresInHours * 60 * 60 * 1000)
       );
 
       await addDoc(collection(db, "meals"), {
         ...form,
+        imageUrl,
         createdAt: Timestamp.now(),
         expiresAt: expiryTimestamp,
+        // Add vendorId or vendorEmail if needed
       });
 
       toast.success("Meal posted successfully!");
       navigate("/dashboard");
     } catch (err) {
-      toast.error("Failed to post meal. Please try again.");
+      toast.error("Failed to post meal: " + err.message);
+      console.error("AddMeal error:", err);
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -74,13 +98,21 @@ const AddMeal = () => {
               min="1"
             />
             <input
-              name="imageUrl"
-              placeholder="Image URL (hosted image)"
-              value={form.imageUrl}
-              onChange={handleChange}
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
               required
             />
-            <button type="submit">📦 Post Meal</button>
+            {preview && (
+              <img
+                src={preview}
+                alt="Preview"
+                style={{ width: "100%", margin: "1rem 0", borderRadius: 8 }}
+              />
+            )}
+            <button type="submit" disabled={uploading}>
+              {uploading ? "Uploading..." : "📦 Post Meal"}
+            </button>
           </form>
         </div>
       </div>

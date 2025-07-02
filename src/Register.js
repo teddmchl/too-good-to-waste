@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import { auth, db } from "./firebase";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -42,8 +42,19 @@ const Register = () => {
         createdAt: new Date(),
       });
 
-      toast.success("Account created successfully!");
-      navigate("/login");
+      // Fetch the role (should be what we just set)
+      const userSnap = await getDoc(userRef);
+      if (userSnap.exists()) {
+        const role = userSnap.data().role;
+        toast.success("Account created successfully!");
+        if (role === "vendor") {
+          navigate("/dashboard");
+        } else {
+          navigate("/explore");
+        }
+      } else {
+        toast.error("User role not found. Please contact support.");
+      }
     } catch (err) {
       toast.error(err.message);
     } finally {
