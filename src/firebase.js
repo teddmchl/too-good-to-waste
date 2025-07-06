@@ -8,7 +8,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyAQDvt_3eFTcD7e4XoSWz_UIFqo3xs3Rag",
   authDomain: "food-redistribution-plat-116ef.firebaseapp.com",
   projectId: "food-redistribution-plat-116ef",
-  storageBucket: "food-redistribution-plat-116ef.firebasestorage.app",
+  storageBucket: "food-redistribution-plat-116ef.appspot.com",
   messagingSenderId: "811509281826",
   appId: "1:811509281826:web:37c85f355376840f1f467b",
   measurementId: "G-QZG0MFK817",

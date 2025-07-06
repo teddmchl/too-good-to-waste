@@ -4,10 +4,9 @@ import { auth } from "./firebase";
 import { useNavigate, Link } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { toast } from "react-toastify";
-import Header from "./components/Header";
+import "./Register.css";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "./firebase";
-import "./Register.css";
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -49,7 +48,6 @@ const Login = () => {
 
   return (
     <>
-      <Header />
       <div className="page-content">
         <div className="auth-container">
           <div

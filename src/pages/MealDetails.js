@@ -1,121 +1,196 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { db, auth } from "../firebase";
-import { collection, addDoc, Timestamp } from "firebase/firestore";
-import { toast } from "react-toastify";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "../firebase";
+import CustomerNavbar from "../components/CustomerNavbar";
 import "./MealDetails.css";
+import { toast } from "react-toastify";
 
-const MealDetails = () => {
-  const { id } = useParams();
-  const [meal, setMeal] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [reserving, setReserving] = useState(false);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchMeal = async () => {
-      const docRef = doc(db, "meals", id);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        setMeal({ id: docSnap.id, ...docSnap.data() });
-      }
-      setLoading(false);
-    };
-    fetchMeal();
-  }, [id]);
-
-  const handleReserve = async () => {
-    if (!auth.currentUser) {
-      toast.error("You must be logged in to reserve.");
-      return;
-    }
-    setReserving(true);
-    try {
-      // Prevent double booking
-      if (meal.claimed) {
-        toast.error("Sorry, this meal has already been reserved.");
-        setReserving(false);
-        return;
-      }
-      // Save to orders
-      await addDoc(collection(db, "orders"), {
-        customerId: auth.currentUser.uid,
-        mealId: meal.id,
-        timestamp: Timestamp.now(),
-        status: "reserved",
-      });
-      // Mark meal as claimed
-      await updateDoc(doc(db, "meals", meal.id), { claimed: true });
-      toast.success("Meal reserved! Check your orders.");
-      navigate("/my-orders");
-    } catch (err) {
-      toast.error("Failed to reserve meal.");
-    } finally {
-      setReserving(false);
-    }
-  };
-
-  if (loading)
-    return (
-      <div className="meal-details-container">
-        <p>Loading...</p>
-      </div>
-    );
-  if (!meal)
-    return (
-      <div className="meal-details-container">
-        <p>Meal not found.</p>
-      </div>
-    );
-
-  return (
-    <div className="meal-details-container">
-      <div className="meal-details-card">
-        <img
-          src={meal.imageUrl}
-          alt={meal.title}
-          className="meal-details-img"
-        />
-        <div className="meal-details-info">
-          <h2>{meal.title}</h2>
-          <p className="vendor">By: {meal.vendorName || "Vendor"}</p>
-          <p className="qty">Quantity: {meal.quantity}</p>
-          <p className="expires">
-            ⏰ Expires in {timeLeft(meal.expiresAt?.seconds)} hrs
-          </p>
-          <div className="badges">
-            {meal.vegetarian && <span className="badge">🌱 Vegetarian</span>}
-            {meal.spicy && <span className="badge">🔥 Spicy</span>}
-            {meal.expiresAt && (
-              <span className="badge">
-                ⏰ {timeLeft(meal.expiresAt?.seconds)} hrs left
-              </span>
-            )}
-          </div>
-          <button
-            className="reserve-btn"
-            onClick={handleReserve}
-            disabled={reserving || meal.claimed}
-          >
-            {meal.claimed
-              ? "Already Reserved"
-              : reserving
-              ? "Reserving..."
-              : "Reserve"}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-function timeLeft(expirySeconds) {
-  if (!expirySeconds) return "?";
-  const now = Date.now();
-  const expiry = expirySeconds * 1000;
+function timeLeft(expiryDate) {
+  if (!expiryDate) return "?";
+  const now = new Date();
+  const expiry = expiryDate.toDate ? expiryDate.toDate() : new Date(expiryDate);
   const diff = expiry - now;
   return Math.max(0, Math.floor(diff / (1000 * 60 * 60)));
 }
+
+const MealDetails = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [meal, setMeal] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [user] = useAuthState(auth);
+
+  // Fetch meal data
+  useEffect(() => {
+    const fetchMeal = async () => {
+      try {
+        setLoading(true);
+        const mealRef = doc(db, "meals", id);
+        const mealSnap = await getDoc(mealRef);
+
+        if (mealSnap.exists()) {
+          setMeal({ id: mealSnap.id, ...mealSnap.data() });
+        } else {
+          toast.error("Meal not found");
+          navigate("/explore");
+        }
+      } catch (error) {
+        console.error("Error fetching meal:", error);
+        toast.error("Error loading meal details");
+        navigate("/explore");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchMeal();
+    }
+  }, [id, navigate]);
+
+  const handleReserve = async () => {
+    if (!user) {
+      toast.error("Please log in to reserve meals");
+      return;
+    }
+
+    // Check if meal is still available
+    if (!meal.status || meal.status !== "available") {
+      toast.error("This meal is no longer available");
+      return;
+    }
+
+    // Check if meal has quantity
+    if (!meal.quantity || meal.quantity <= 0) {
+      toast.error("This meal is out of stock");
+      return;
+    }
+
+    // Check if meal has expired
+    if (
+      meal.expiresAt &&
+      meal.expiresAt.toDate &&
+      meal.expiresAt.toDate() <= new Date()
+    ) {
+      toast.error("This meal has expired");
+      return;
+    }
+
+    // Redirect to checkout with the meal
+    const checkoutData = {
+      id: meal.id,
+      title: meal.title,
+      imageUrl: meal.imageUrl,
+      vendorName: meal.vendorName,
+      vendorId: meal.vendorId,
+      price: meal.discountedPrice || 0,
+      quantity: 1,
+      expiresAt: meal.expiresAt,
+      dietaryType: meal.dietaryType,
+    };
+
+    console.log("Navigating to checkout with data:", checkoutData);
+    console.log("Meal data:", meal);
+
+    navigate("/checkout", {
+      state: {
+        checkoutItems: [checkoutData],
+      },
+    });
+  };
+
+  const renderDietaryBadge = (dietaryType) => {
+    switch (dietaryType) {
+      case "vegetarian":
+        return <span className="dietary-badge vegetarian">🌱 Vegetarian</span>;
+      case "omnivorous":
+        return <span className="dietary-badge omnivorous">🥩 Omnivorous</span>;
+      default:
+        return null;
+    }
+  };
+
+  const renderMealImage = (meal) => {
+    // Only show emoji dietary icons, no real images
+    if (meal.dietaryType) {
+      const getDietaryIcon = (dietaryType) => {
+        switch (dietaryType) {
+          case "omnivorous":
+            return "🥩";
+          case "vegetarian":
+            return "🌱";
+          case "any":
+            return "🍽️";
+          default:
+            return "🍽️";
+        }
+      };
+
+      return (
+        <div className="meal-image-emoji">
+          <span className="dietary-icon-large">
+            {getDietaryIcon(meal.dietaryType)}
+          </span>
+        </div>
+      );
+    }
+    // If no dietary type, don't render anything
+    return null;
+  };
+
+  if (loading || !meal) {
+    return (
+      <>
+        <CustomerNavbar />
+        <div className="meal-details-container">
+          <div style={{ textAlign: "center", padding: "2rem" }}>
+            Loading meal details...
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // Redirect if meal doesn't have dietary type
+  if (!meal.dietaryType) {
+    toast.error("This meal is not available");
+    navigate("/explore");
+    return null;
+  }
+
+  return (
+    <>
+      <CustomerNavbar />
+      <div className="meal-details-container">
+        <div className="meal-details-card">
+          {renderMealImage(meal)}
+          <div className="meal-details-info">
+            <h2>{meal.title}</h2>
+            <p className="vendor">By: {meal.vendorName}</p>
+            <p className="qty">Quantity: {meal.quantity}</p>
+            <p className="expires">
+              ⏰ Expires in {timeLeft(meal.expiresAt)} hrs
+            </p>
+            {meal.discountedPrice && (
+              <p className="price">💰 Price: KES {meal.discountedPrice}</p>
+            )}
+            <div className="dietary-badges">
+              {renderDietaryBadge(meal.dietaryType)}
+            </div>
+            <button
+              className="reserve-btn"
+              onClick={handleReserve}
+              disabled={loading}
+            >
+              {loading ? "Reserving..." : "Reserve"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
 
 export default MealDetails;

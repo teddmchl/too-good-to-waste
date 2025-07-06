@@ -4,22 +4,35 @@
   padding: 6rem 2rem 3rem;
   max-width: 1100px;
   margin: auto;
+  min-height: 100vh;
+  background: #f7fafc;
+  color: #2d3748;
 }
 
 .greeting {
   text-align: center;
   margin-bottom: 2rem;
+  padding: 2rem 0;
 }
 
 .greeting h1 {
   font-size: 2rem;
   color: #2c7a7b;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
 }
 
 .greeting p {
   font-size: 1rem;
   color: #718096;
+  margin: 0;
+}
+
+.greeting p + p {
+  margin-top: 1rem;
+  color: #2c7a7b;
+  font-size: 1.2rem;
+  font-weight: 500;
 }
 
 .stats-grid {
@@ -28,84 +41,140 @@
   gap: 1.5rem;
   justify-content: center;
   margin-bottom: 2.5rem;
+  padding: 0 1rem;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.stats-grid.large-stats {
+  gap: 2.5rem;
 }
 
 .stat-box {
   background: #ffffff;
-  padding: 1.25rem 1.5rem;
+  padding: 2.5rem 2rem;
   border-radius: 12px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
   text-align: center;
-  width: 160px;
+  width: 220px;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .stat-box h3 {
-  font-size: 1.6rem;
-  margin-bottom: 0.25rem;
+  font-size: 2.5rem;
+  margin: 0.5rem 0 0.25rem 0;
   color: #2c7a7b;
 }
 
 .stat-box p {
-  font-size: 0.95rem;
+  font-size: 1.2rem;
   color: #4a5568;
+  margin: 0;
 }
 
-.icon {
-  font-size: 1.75rem;
+.stat-box .icon {
+  font-size: 3rem;
   display: block;
   margin-bottom: 0.5rem;
 }
 
 .section-title {
-  font-size: 1.3rem;
-  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  margin: 3rem 0 2rem 0;
   color: #2c7a7b;
+  text-align: center;
+  font-weight: 600;
+  position: relative;
+  z-index: 10;
+  background: #f7fafc;
+  padding: 1rem 0;
+  border-bottom: 2px solid #e2e8f0;
 }
 
 .meals-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2rem;
+  margin: 2rem 0 2rem 0;
+  padding-top: 1rem;
 }
 
 .meal-card {
   background: white;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   transition: 0.3s ease;
   position: relative;
+  min-height: 280px;
 }
 
 .meal-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
 }
 
-.meal-card img {
+.meal-image {
   width: 100%;
   height: 160px;
-  object-fit: cover;
+  background: #f7fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.dietary-icon {
+  font-size: 4rem;
 }
 
 .meal-info {
-  padding: 1rem;
+  padding: 1.5rem;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .meal-info h4 {
-  font-size: 1.1rem;
-  margin-bottom: 0.5rem;
+  font-size: 1.3rem;
+  margin: 0 0 0.75rem 0;
   color: #2d3748;
+  line-height: 1.3;
+  font-weight: 600;
 }
 
 .meal-info .qty {
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: #4a5568;
+  margin: 0.5rem 0;
+  font-weight: 500;
+}
+
+.meal-info .price {
+  color: #2c7a7b;
+  font-weight: 700;
+  margin: 0.5rem 0;
+  font-size: 1.2rem;
 }
 
 .meal-info .expires {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: #e53e3e;
-  margin-top: 0.4rem;
+  margin: 0.5rem 0;
+  font-weight: 500;
+}
+
+.meal-info .status {
+  font-size: 0.95rem;
+  color: #718096;
+  margin: 0.5rem 0 0 0;
+  font-weight: 500;
 }
 
 .floating-button {
@@ -129,34 +198,184 @@
   background: #319795;
 }
 
-.loading, .no-listings {
+.empty-listings {
   text-align: center;
+  padding: 3rem 2rem;
+  background: #f7fafc;
+  border-radius: 12px;
+  border: 2px dashed #cbd5e0;
+  margin: 2rem 0;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.6;
+}
+
+.empty-listings h3 {
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+  font-size: 1.3rem;
+}
+
+.empty-listings p {
   color: #718096;
+  margin-bottom: 2rem;
   font-size: 1rem;
 }
 
-.delete-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: #fff0f0;
-  color: #e53e3e;
+.add-first-meal-btn {
+  background: #2c7a7b;
+  color: white;
   border: none;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.1rem;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(229, 62, 62, 0.08);
-  transition: background 0.2s, color 0.2s;
-  z-index: 2;
+  transition: background 0.2s;
 }
 
-.delete-btn:hover, .delete-btn:focus {
-  background: #e53e3e;
-  color: #fff;
-  outline: none;
+.add-first-meal-btn:hover {
+  background: #319795;
+}
+
+.status-available {
+  color: #38a169;
+  font-weight: 600;
+}
+
+.status-reserved {
+  color: #d69e2e;
+  font-weight: 600;
+}
+
+.status-picked_up {
+  color: #2c7a7b;
+  font-weight: 600;
+}
+
+.status-sold_out {
+  color: #e53e3e;
+  font-weight: 600;
+}
+
+.sold-out {
+  color: #e53e3e;
+  font-weight: 600;
+  background: #fed7d7;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1rem 0;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.centered-main-header {
+  text-align: center;
+  font-size: 2rem;
+  color: #2c7a7b;
+  font-weight: 700;
+  margin: 0;
+  padding: 1rem 0;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.welcome-section {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 1rem 0;
+}
+
+.welcome-section.left-align {
+  text-align: left;
+}
+
+.welcome-section span {
+  font-size: 1.8rem;
+  color: #2c7a7b;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.impact-msg {
+  font-size: 1rem;
+  color: #718096;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 5rem 1rem 2rem;
+  }
+
+  .stats-grid {
+    gap: 1rem;
+    padding: 0;
+  }
+
+  .stat-box {
+    width: 160px;
+    min-height: 120px;
+    padding: 1.5rem 1rem;
+  }
+
+  .stat-box .icon {
+    font-size: 2rem;
+  }
+
+  .stat-box h3 {
+    font-size: 1.5rem;
+  }
+
+  .stat-box p {
+    font-size: 1rem;
+  }
+
+  .meals-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .greeting h1 {
+    font-size: 1.8rem;
+  }
+
+  .floating-button {
+    bottom: 16px;
+    right: 16px;
+    padding: 0.8rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .stat-box {
+    width: 200px;
+  }
+
+  .meals-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .floating-button {
+    bottom: 16px;
+    right: 16px;
+    padding: 0.8rem 1rem;
+    font-size: 0.9rem;
+  }
 }
